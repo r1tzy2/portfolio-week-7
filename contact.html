@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>YangZhang — Contact Me</title>
+  <meta name="description" content="Say hello! I'd love to hear from you." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a href="index.html" class="nav-brand">Yang<span>Zhang</span></a>
+      <button class="nav-toggle" aria-label="Toggle menu" onclick="document.getElementById('navLinks').classList.toggle('open')">
+        <span></span><span></span><span></span>
+      </button>
+      <ul class="nav-links" id="navLinks">
+        <li><a href="index.html">Home</a></li>
+        <li><a href="resume.html">Resume</a></li>
+        <li><a href="projects.html">Projects</a></li>
+        <li><a href="contact.html" class="active">Contact Me</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <div class="container">
+      <div class="page-header">
+        <h1>Say Hello 👋</h1>
+        <p>Whether it's a project, a question, or just a wave — I'd love to hear from you.</p>
+      </div>
+
+      <div class="contact-grid">
+        <!-- Contact details -->
+        <section class="card">
+          <h2 style="font-size: 1.35rem; margin-bottom: 10px;">Reach me directly</h2>
+          <p style="color: var(--muted); margin-bottom: 8px;">
+            I usually reply within a day or two. Mornings (with coffee) are my favorite time to write back.
+          </p>
+          <ul class="contact-list">
+            <li>
+              <span class="contact-icon">✉️</span>
+              <div>
+                <div class="label">Email</div>
+                <div class="value">YangZhang2602@student.xjtlu.edu.cn</div>
+              </div>
+            </li>
+            <li>
+              <span class="contact-icon">🐦</span>
+              <div>
+                <div class="label">Social</div>
+                <div class="value">111222333</div>
+              </div>
+            </li>
+            <li>
+              <span class="contact-icon">📍</span>
+              <div>
+                <div class="label">Based in</div>
+                <div class="value">Hangzhou, Zhejiang</div>
+              </div>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Contact form -->
+        <section class="card">
+          <h2 style="font-size: 1.35rem; margin-bottom: 18px;">Send me a note</h2>
+          <form class="contact-form" id="contactForm">
+            <div class="form-group">
+              <label for="name">Your name</label>
+              <input type="text" id="name" name="name" placeholder="e.g. Jamie Chen" required />
+            </div>
+            <div class="form-group">
+              <label for="email">Your email</label>
+              <input type="email" id="email" name="email" placeholder="you@example.com" required />
+            </div>
+            <div class="form-group">
+              <label for="message">Message</label>
+              <textarea id="message" name="message" rows="5" placeholder="Tell me what's on your mind..." required></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" id="contactSubmit">Send message</button>
+            <p class="form-note" id="contactStatus" role="status" aria-live="polite" hidden></p>
+            <p class="form-note">Your message is saved securely — I usually reply within a day or two.</p>
+          </form>
+        </section>
+      </div>
+    </div>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div class="fun-fact">
+        <p>
+          <span class="fun-fact-emoji">🌱</span>
+          <strong>Fun facts about me:</strong> I once kept a houseplant alive for 9 years — and named him "Captain Leaves".
+        </p>
+        <p>
+          <span class="fun-fact-emoji">💅</span>
+          I once did the nail salon.
+        </p>
+      </div>
+      <div class="footer-links">
+        <a href="index.html">Home</a>
+        <a href="resume.html">Resume</a>
+        <a href="projects.html">Projects</a>
+        <a href="contact.html">Contact</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    (function () {
+      "use strict";
+
+      /* ===== Supabase REST ===== */
+      var SUPABASE_URL = "https://oorargzetmvefuhpxram.supabase.co";
+      var SUPABASE_KEY = "sb_publishable_j9UIY02bGtxZTG9JqmrRZw_OXIxoBWB";
+      var CONTACTS_URL = SUPABASE_URL + "/rest/v1/contacts";
+
+      var form = document.getElementById("contactForm");
+      var nameInput = document.getElementById("name");
+      var emailInput = document.getElementById("email");
+      var messageInput = document.getElementById("message");
+      var submitBtn = document.getElementById("contactSubmit");
+      var statusEl = document.getElementById("contactStatus");
+
+      function showStatus(text, isError) {
+        statusEl.textContent = text;
+        statusEl.style.color = isError ? "#b3261e" : "";
+        statusEl.hidden = false;
+      }
+
+      var FALLBACK_EMAIL = "YangZhang2602@student.xjtlu.edu.cn";
+
+      // Turn whatever Supabase sends back into a readable, specific message.
+      function formatError(err) {
+        var parts = [];
+
+        if (!err || !err.status) {
+          parts.push("Couldn't reach the server. Check your internet connection and try again.");
+          parts.push("Please email me directly at " + FALLBACK_EMAIL + ".");
+          return parts.join(" ");
+        }
+
+        parts.push("Your message couldn't be saved (HTTP " + err.status + ").");
+
+        if (err.sb) {
+          parts.push("Code " + (err.sb.code || "unknown") + ": " + (err.sb.message || "unknown error") + ".");
+          if (err.sb.details) parts.push("Details: " + err.sb.details + ".");
+          if (err.sb.hint) parts.push("Hint: " + err.sb.hint + ".");
+        } else if (err.body) {
+          parts.push("Server response: " + String(err.body).slice(0, 200) + ".");
+        }
+
+        parts.push("Please email me directly at " + FALLBACK_EMAIL + ".");
+        return parts.join(" ");
+      }
+
+      form.addEventListener("submit", function (event) {
+        event.preventDefault();
+
+        // Native validation first (required / email format)
+        if (!form.checkValidity()) {
+          form.reportValidity();
+          return;
+        }
+
+        var payload = {
+          name: nameInput.value.trim(),
+          email: emailInput.value.trim(),
+          message: messageInput.value.trim()
+        };
+
+        submitBtn.disabled = true;
+        var originalLabel = submitBtn.textContent;
+        submitBtn.textContent = "Sending...";
+        statusEl.hidden = true;
+
+        fetch(CONTACTS_URL, {
+          method: "POST",
+          headers: {
+            "apikey": SUPABASE_KEY,
+            "Authorization": "Bearer " + SUPABASE_KEY,
+            "Content-Type": "application/json",
+            "Prefer": "return=minimal"
+          },
+          body: JSON.stringify(payload)
+        })
+          .then(function (res) {
+            if (!res.ok) {
+              return res.text().then(function (t) {
+                var err = new Error("Supabase " + res.status + ": " + t);
+                err.status = res.status;
+                err.body = t;
+                try { err.sb = JSON.parse(t); } catch (e) { err.sb = null; }
+                throw err;
+              });
+            }
+            form.reset();
+            showStatus("Thanks for your message! I'll get back to you soon. 🌷", false);
+          })
+          .catch(function (err) {
+            console.error("Contact form submit failed:", err.status || "(network)", err.body || err.message);
+            showStatus(formatError(err), true);
+          })
+          .then(function () {
+            submitBtn.disabled = false;
+            submitBtn.textContent = originalLabel;
+          });
+      });
+    })();
+  </script>
+</body>
+</html>
